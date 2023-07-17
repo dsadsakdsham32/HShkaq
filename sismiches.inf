@@ -1,0 +1,82 @@
+;
+; sismiches.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider=%ManufacturerName%
+CatalogFile=sismiches.cat
+DriverVer = 05/01/2022,8.12.7.390
+
+[DestinationDirs]
+DefaultDestDir = 12
+sismiches_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+sismiches.sys  = 1,,
+;
+
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%sismiches.DeviceDesc%=sismiches_Device, Root\sismiches ; TODO: edit hw-id
+
+[sismiches_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+sismiches.sys
+
+;-------------- Service installation
+[sismiches_Device.NT.Services]
+AddService = sismiches,%SPSVCINST_ASSOCSERVICE%, sismiches_Service_Inst
+
+; -------------- sismiches driver install sections
+[sismiches_Service_Inst]
+DisplayName    = %sismiches.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\sismiches.sys
+
+;
+;--- sismiches_Device Coinstaller installation ------
+;
+
+[sismiches_Device.NT.CoInstallers]
+AddReg=sismiches_Device_CoInstaller_AddReg
+CopyFiles=sismiches_Device_CoInstaller_CopyFiles
+
+[sismiches_Device_CoInstaller_AddReg]
+;
+
+
+[sismiches_Device_CoInstaller_CopyFiles]
+;
+
+
+[sismiches_Device.NT.Wdf]
+KmdfService =  sismiches, sismiches_wdfsect
+[sismiches_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="IMHO" ;TODO: Replace with your manufacturer name
+ClassName="System" ; TODO: edit ClassName
+DiskName = "sismiches Installation Disk"
+sismiches.DeviceDesc = "sismiches Device"
+sismiches.SVCDESC = "sismiches Service"
